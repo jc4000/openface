@@ -185,27 +185,39 @@ if __name__ == '__main__':
     confidenceList = []
     while True:
         ret, frame = video_capture.read()
-        if not foundFlg:
-            persons, confidences = infer(frame, args)
-            print "P: " + str(persons) + " C: " + str(confidences)
-            try:
-                # append with two floating point precision
-                confidenceList.append('%.2f' % confidences[0])
-            except:
-                # If there is no face detected, confidences matrix will be empty.
-                # We can simply ignore it.
-                pass
-    
-            for i, c in enumerate(confidences):
+        personsFixed = []
+        confidencesFixed = []
+        
+        persons, confidences = infer(frame, args)
+        print "P: " + str(persons) + " C: " + str(confidences)
+        try:
+            # append with two floating point precision
+            confidenceList.append('%.2f' % confidences[0])
+        except:
+            # If there is no face detected, confidences matrix will be empty.
+            # We can simply ignore it.
+            pass
+
+        for i, c in enumerate(confidences):
+            if not foundFlg:
+                confidencesFixed.append(c)
                 if c <= args.threshold:  # 0.5 is kept as threshold for known face.
                     persons[i] = "_unknown"
+                    personsFixed.append("_unknown")                    
                 else:
-    
-                    # Print the person name and conf value on the frame
-            cv2.putText(frame, "P: {} C: {}".format(persons, confidences),
+                    personsFixed.append(persons[i])    
+                   
+        # Print the person name and conf value on the frame
+        cv2.putText(frame, "P: {} C: {}".format(personsFixed, confidencesFixed),
                         (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-            cv2.imshow('', frame)
+            
+        
+        cv2.imshow('', frame)
+        if cv2.waitKey(1) & 0xFF == ord('l'):
             foundFlg = True
+            
+        if cv2.waitKey(1) & 0xFF == ord('u'):
+            foundFlg = False            
         # quit the program on the press of key 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
