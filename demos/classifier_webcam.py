@@ -170,7 +170,9 @@ if __name__ == '__main__':
         help='The Python pickle representing the classifier. This is NOT the Torch network model, which can be set with --networkModel.')
 
     args = parser.parse_args()
-
+    print "Press ['q'] to exit the program!"
+    print "Press ['l'] to lock the recognition!"
+    print "Press ['u'] to start recognition again!"
     align = openface.AlignDlib(args.dlibFacePredictor)
     net = openface.TorchNeuralNet(
         args.networkModel,
@@ -210,9 +212,9 @@ if __name__ == '__main__':
         # Print the person name and conf value on the frame
         cv2.putText(frame, "P: {} C: {}".format(personsFixed, confidencesFixed),
                         (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
-            
-        
         cv2.imshow('', frame)
+        
+        #press 'l' to lock the recognition
         if cv2.waitKey(1) & 0xFF == ord('l'):
             foundFlg = True
             
